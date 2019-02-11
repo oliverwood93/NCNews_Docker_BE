@@ -1,7 +1,7 @@
 const {
   articleData, topicData, userData, commentData,
 } = require('../data');
-const { formatTime } = require('../utils');
+const { formatTime, formatComments, getArticleIdLookup } = require('../utils');
 
 exports.seed = (connection, Promise) => connection.migrate
   .rollback()
@@ -14,5 +14,13 @@ exports.seed = (connection, Promise) => connection.migrate
     .returning('*'))
   .then(() => {
     const articlesTimeFormatted = formatTime(articleData);
-    return connection('articles').insert(articlesTimeFormatted);
+    return connection('articles')
+      .insert(articlesTimeFormatted)
+      .returning('*');
+  })
+  .then((insertedArticles) => {
+    const articleIdRef = getArticleIdLookup(insertedArticles);
+    const commentsTimeFormatted = formatTime(commentData);
+    const formattedComments = formatComments(commentsTimeFormatted, articleIdRef);
+    return connection('comments').insert(formattedComments);
   });
