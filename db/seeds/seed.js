@@ -8,4 +8,10 @@ exports.seed = (connection, Promise) => connection.migrate
   .then(() => connection('topics')
     .insert(topicData)
     .returning('*'))
-  .then(returned => console.log(returned));
+  .then(() => connection('users')
+    .insert(userData)
+    .returning('*'))
+  .then(() => connection('articles')
+    .insert(articleData)
+    .returning('*'))
+  .then(article => console.log(article));
