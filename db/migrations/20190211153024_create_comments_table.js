@@ -10,7 +10,7 @@ exports.up = function (connection, Promise) {
       .integer('article_id')
       .notNullable()
       .references('articles.article_id');
-    commentsTable.integer('votes').defaultsTo(0);
+    commentsTable.integer('votes').defaultTo(0);
     commentsTable.dateTime('created_at').defaultTo(new Date().toISOString());
     commentsTable.text('body').notNullable();
   });

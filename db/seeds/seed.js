@@ -19,7 +19,9 @@ exports.seed = (connection, Promise) => connection.migrate
       .returning('*');
   })
   .then((insertedArticles) => {
+    console.log(insertedArticles);
     const articleIdRef = getArticleIdLookup(insertedArticles);
+    // console.log(articleIdRef);
     const commentsTimeFormatted = formatTime(commentData);
     const formattedComments = formatComments(commentsTimeFormatted, articleIdRef);
     return connection('comments').insert(formattedComments);
