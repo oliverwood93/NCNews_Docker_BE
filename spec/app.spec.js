@@ -97,9 +97,22 @@ describe('/api', () => {
       it('GET/QUERY: allows users to query with their own sort criteria and order, such as votes and ascending', () => request
         .get('/api/articles?sort_by=votes&order=asc')
         .expect(200)
-        .then(({ body }) => expect(body.articles[0].votes).to.be.lessThan(
-          body.articles[body.articles.length - 1].votes,
-        )));
+        .then(
+          ({ body }) => expect(body.articles[0].votes <= body.articles[body.articles.length - 1].votes).to.be
+            .true,
+        ));
+      it('GET/QUERY: allows users to limit the rows displayed on a page, defaults to 10', () => request
+        .get('/api/articles?limit=7')
+        .expect(200)
+        .then(({ body }) => expect(body.articles.length).to.equal(7)));
     });
+    it('GET/QUERY: allows user to query a certain page of article results', () => request
+      .get('/api/articles?p=3&limit=2')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).to.equal(2);
+        expect(body.articles[0].article_id).to.equal(5);
+        expect(body.articles[1].article_id).to.equal(6);
+      }));
   });
 });
