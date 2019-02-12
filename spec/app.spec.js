@@ -51,6 +51,31 @@ describe('/api', () => {
         expect(+body.articles[0].comment_count).to.be.a('number');
         expect(+body.articles[3].comment_count).to.be.a('number');
       }));
+      it('POST request: should respond with a 201 status and return the posted object with all keys, and that the db generated id key is correct', () => {
+        const newArticle = {
+          title: 'Bogus News',
+          body: 'blahblah, blah blah bllllllllllllllllllaaaaaaaahhhh',
+          votes: 4,
+          topic: 'mitch',
+          author: 'butter_bridge',
+        };
+        return request
+          .post('/api/articles')
+          .send(newArticle)
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.addedArticle).contain.keys(
+              'article_id',
+              'title',
+              'body',
+              'votes',
+              'topic',
+              'author',
+              'created_at',
+            );
+            expect(body.addedArticle.article_id).to.equal(13);
+          });
+      });
     });
   });
 });

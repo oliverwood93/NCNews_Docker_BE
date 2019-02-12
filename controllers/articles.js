@@ -5,5 +5,9 @@ exports.sendArticles = (req, res, nex) => {
 };
 
 exports.addArticle = (req, res, next) => {
-  postArticle();
+  const newArticle = req.body;
+
+  postArticle(newArticle)
+    .then(([addedArticle]) => res.status(201).send({ addedArticle }))
+    .catch(console.log);
 };

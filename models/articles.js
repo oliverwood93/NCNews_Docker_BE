@@ -7,4 +7,6 @@ exports.getArticles = () => connection
   .leftJoin('comments', 'comments.article_id', 'articles.article_id')
   .groupBy('articles.article_id');
 
-exports.postArticle = () => {};
+exports.postArticle = newArticle => connection('articles')
+  .insert(newArticle)
+  .returning('*');
