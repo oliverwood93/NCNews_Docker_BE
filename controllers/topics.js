@@ -2,7 +2,6 @@ const { getTopics, postTopic } = require('../models/topics');
 
 exports.sendTopics = (req, res, next) => {
   getTopics().then((topics) => {
-    // console.log(topics);
     res.status(200).send({ topics });
   });
 };

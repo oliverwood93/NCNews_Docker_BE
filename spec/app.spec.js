@@ -76,6 +76,18 @@ describe('/api', () => {
             expect(body.addedArticle.article_id).to.equal(13);
           });
       });
+      it('GET/QUERY: allows user to query by author', () => request
+        .get('/api/articles?author=rogersop')
+        .expect(200)
+        .then(
+          ({ body }) => expect(body.articles.every(article => article.author === 'rogersop')).to.be.true,
+        ));
+      it('GET/QUERY: allows user to query by topic', () => request
+        .get('/api/articles?topic=cats')
+        .expect(200)
+        .then(
+          ({ body }) => expect(body.articles.every(article => article.topic === 'cats')).to.be.true,
+        ));
     });
   });
 });
