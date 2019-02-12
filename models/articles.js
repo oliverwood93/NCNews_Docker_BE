@@ -20,6 +20,15 @@ exports.getArticles = ({
     .offset(limit * p - limit)
     .limit(limit);
 };
+
+exports.getArticleById = articleId => connection
+  .select('articles.*')
+  .count({ comment_count: 'comments' })
+  .from('articles')
+  .where({ 'articles.article_id': articleId })
+  .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+  .groupBy('articles.article_id');
+
 exports.postArticle = newArticle => connection('articles')
   .insert(newArticle)
   .returning('*');

@@ -105,14 +105,40 @@ describe('/api', () => {
         .get('/api/articles?limit=7')
         .expect(200)
         .then(({ body }) => expect(body.articles.length).to.equal(7)));
+      it('GET/QUERY: allows user to query a certain page of article results', () => request
+        .get('/api/articles?p=3&limit=2')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).to.equal(2);
+          expect(body.articles[0].article_id).to.equal(5);
+          expect(body.articles[1].article_id).to.equal(6);
+        }));
     });
-    it('GET/QUERY: allows user to query a certain page of article results', () => request
-      .get('/api/articles?p=3&limit=2')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles.length).to.equal(2);
-        expect(body.articles[0].article_id).to.equal(5);
-        expect(body.articles[1].article_id).to.equal(6);
-      }));
+    describe('/articles/:article_id', () => {
+      it('GET request: returns a status 200', () => request.get('/api/articles/3').expect(200));
+      it('GET request: returns an object with the given article id parameter and object contains all correct values', () => request
+        .get('/api/articles/2')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.be.a('object');
+          expect(body.article.article_id).to.equal(2);
+          expect(body.article).contain.keys(
+            'article_id',
+            'title',
+            'body',
+            'votes',
+            'topic',
+            'author',
+            'created_at',
+          );
+        }));
+      it('GET request: returned object also has a comment_count key with correct value', () => request
+        .get('/api/articles/5')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).contain.keys('comment_count');
+          expect(+body.article.comment_count).to.equal(2);
+        }));
+    });
   });
 });
