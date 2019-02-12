@@ -12,7 +12,9 @@
     "migrate:make": "knex migrate:make",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
-    "seed": "knex seed:run"
+    "seed": "knex seed:run",
+    "query": "psql -f query-builder.sql > query.txt",
+    "listen": "nodemon listen.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "mocha": "^5.2.0",
+    "nodemon": "^1.18.10",
     "pg": "^7.8.0",
     "supertest": "^3.4.2"
   },
