@@ -88,6 +88,18 @@ describe('/api', () => {
         .then(
           ({ body }) => expect(body.articles.every(article => article.topic === 'cats')).to.be.true,
         ));
+      it('GET/QUERY: sorts articles by date and desc by default', () => request
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => expect(new Date(body.articles[0].created_at).getTime()).to.be.greaterThan(
+          new Date(body.articles[1].created_at).getTime(),
+        )));
+      it('GET/QUERY: allows users to query with their own sort criteria and order, such as votes and ascending', () => request
+        .get('/api/articles?sort_by=votes&order=asc')
+        .expect(200)
+        .then(({ body }) => expect(body.articles[0].votes).to.be.lessThan(
+          body.articles[body.articles.length - 1].votes,
+        )));
     });
   });
 });
