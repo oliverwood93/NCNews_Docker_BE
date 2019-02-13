@@ -23,17 +23,18 @@ exports.getArticles = ({
     .limit(limit);
 };
 
-exports.getArticleComments = articleId => connection
-  .select(
-    'comments.comment_id',
-    'comments.votes',
-    'comments.created_at',
-    'comments.author',
-    'comments.body',
-  )
-  .from('articles')
-  .leftJoin('comments', 'comments.article_id', 'articles.article_id')
-  .where('comments.article_id', articleId);
+exports.getArticleComments = (
+  articleId,
+  {
+    sort_by = 'created_at', order = 'desc', limit = 10, p,
+  },
+) => connection
+  .select('comment_id', 'votes', 'created_at', 'author', 'body')
+  .from('comments')
+  .where('article_id', articleId)
+  .orderBy(sort_by, order)
+  .offset(limit * p - limit)
+  .limit(limit);
 
 exports.postArticle = newArticle => connection('articles')
   .insert(newArticle)

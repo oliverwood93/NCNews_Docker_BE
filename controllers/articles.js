@@ -43,5 +43,5 @@ exports.deleteArticleById = (req, res, next) => {
 
 exports.sendArticleComments = (req, res, next) => {
   const { article_id } = req.params;
-  getArticleComments(article_id).then(articleComments => res.status(200).send({ articleComments }));
+  getArticleComments(article_id, req.query).then(articleComments => res.status(200).send({ articleComments }));
 };

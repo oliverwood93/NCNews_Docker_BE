@@ -163,8 +163,8 @@ describe('/api', () => {
         .then(({ body }) => expect(body.articles.find(article => article.article_id === 2)).to.equal(undefined)));
     });
     describe('/articles/:article_id/comments', () => {
-      it.only('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
-      it.only('GET request: returns an array of comments from given article ID and contains correct keys', () => request
+      it('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
+      it('GET request: returns an array of comments from given article ID and contains correct keys', () => request
         .get('/api/articles/1/comments')
         .then(({ body }) => expect(body.articleComments[0]).contain.keys(
           'comment_id',
@@ -173,6 +173,31 @@ describe('/api', () => {
           'author',
           'body',
         )));
+      it.only('GET/QUERY: sort by and ordering of results defaults to date and descending', () => request
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(
+          ({ body }) => expect(
+            new Date(body.articleComments[0].created_at).getTime()
+                  > new Date(body.articleComments[3].created_at).getTime(),
+          ).to.be.true,
+        ));
+      it.only('GET/QUERY: allows user to set Limit of rows displayed on a page which defaults to 10', () => request
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body }) => expect(body.articleComments).to.have.length(10))
+        .then(() => request.get('/api/articles/1/comments?limit=4'))
+        .then(({ body }) => expect(body.articleComments).to.have.length(4)));
+      it.only('GET/QUERY: allows user to query a certain page of article results', () => request
+        .get('/api/articles/1/comments?limit=3&p=2')
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body);
+          expect(body.articleComments[0].comment_id).to.equal(5);
+          expect(body.articleComments[1].comment_id).to.equal(6);
+          expect(body.articleComments[2].comment_id).to.equal(7);
+          expect(body.articleComments).to.have.length(3);
+        }));
     });
   });
 });
