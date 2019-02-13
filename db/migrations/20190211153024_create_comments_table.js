@@ -9,7 +9,8 @@ exports.up = function (connection, Promise) {
     commentsTable
       .integer('article_id')
       .notNullable()
-      .references('articles.article_id');
+      .references('articles.article_id')
+      .onDelete('CASCADE');
     commentsTable.integer('votes').defaultTo(0);
     commentsTable.dateTime('created_at').defaultTo(new Date().toISOString());
     commentsTable.text('body').notNullable();

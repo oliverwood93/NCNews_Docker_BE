@@ -53,6 +53,12 @@ exports.deleteArticle = articleId => connection
   .where('article_id', articleId)
   .del();
 
+exports.postComment = (articleId, commentData) => {
+  const { username, body } = commentData;
+  return connection('comments')
+    .insert({ article_id: articleId, author: username, body })
+    .returning('*');
+};
 // exports.getArticleById = articleId => connection
 //   .select('articles.*')
 //   .count({ comment_count: 'comments' })

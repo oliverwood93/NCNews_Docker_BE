@@ -157,10 +157,10 @@ describe('/api', () => {
         }));
       it('DELETE request: responds with a 204 status code', () => request.delete('/api/articles/2').expect(204));
       it('DELETE request: removes/deletes articles with the given article ID parameter', () => request
-        .delete('/api/articles/2')
+        .delete('/api/articles/1')
         .expect(204)
         .then(() => request.get('/api/articles/'))
-        .then(({ body }) => expect(body.articles.find(article => article.article_id === 2)).to.equal(undefined)));
+        .then(({ body }) => expect(body.articles.find(article => article.article_id === 1)).to.equal(undefined)));
     });
     describe('/articles/:article_id/comments', () => {
       it('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
@@ -173,7 +173,7 @@ describe('/api', () => {
           'author',
           'body',
         )));
-      it.only('GET/QUERY: sort by and ordering of results defaults to date and descending', () => request
+      it('GET/QUERY: sort by and ordering of results defaults to date and descending', () => request
         .get('/api/articles/1/comments')
         .expect(200)
         .then(
@@ -182,22 +182,44 @@ describe('/api', () => {
                   > new Date(body.articleComments[3].created_at).getTime(),
           ).to.be.true,
         ));
-      it.only('GET/QUERY: allows user to set Limit of rows displayed on a page which defaults to 10', () => request
+      it('GET/QUERY: allows user to set Limit of rows displayed on a page which defaults to 10', () => request
         .get('/api/articles/1/comments')
         .expect(200)
         .then(({ body }) => expect(body.articleComments).to.have.length(10))
         .then(() => request.get('/api/articles/1/comments?limit=4'))
         .then(({ body }) => expect(body.articleComments).to.have.length(4)));
-      it.only('GET/QUERY: allows user to query a certain page of article results', () => request
+      it('GET/QUERY: allows user to query a certain page of article results', () => request
         .get('/api/articles/1/comments?limit=3&p=2')
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
           expect(body.articleComments[0].comment_id).to.equal(5);
           expect(body.articleComments[1].comment_id).to.equal(6);
           expect(body.articleComments[2].comment_id).to.equal(7);
           expect(body.articleComments).to.have.length(3);
         }));
+      it.only('POST request: responds with a 201 status and returns the posted comment with correct keys', () => {
+        const newComment = {
+          username: 'butter_bridge',
+          body: 'This is testing that the post works',
+        };
+        return request
+          .post('/api/articles/4/comments')
+          .send(newComment)
+          .expect(201)
+          .then(({ body }) => {
+            console.log(body.postedComment);
+            expect(body.postedComment).contain.keys(
+              'author',
+              'comment_id',
+              'votes',
+              'body',
+              'created_at',
+            );
+          });
+      });
+      // it('PATCH request: responds with 202 status and the updated comment', () => {
+
+      // });
     });
   });
 });
