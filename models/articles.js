@@ -23,13 +23,17 @@ exports.getArticles = ({
     .limit(limit);
 };
 
-// exports.getArticleById = articleId => connection
-//   .select('articles.*')
-//   .count({ comment_count: 'comments' })
-//   .from('articles')
-//   .where({ 'articles.article_id': articleId })
-//   .leftJoin('comments', 'comments.article_id', 'articles.article_id')
-//   .groupBy('articles.article_id');
+exports.getArticleComments = articleId => connection
+  .select(
+    'comments.comment_id',
+    'comments.votes',
+    'comments.created_at',
+    'comments.author',
+    'comments.body',
+  )
+  .from('articles')
+  .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+  .where('comments.article_id', articleId);
 
 exports.postArticle = newArticle => connection('articles')
   .insert(newArticle)
@@ -47,3 +51,11 @@ exports.deleteArticle = articleId => connection
   .from('articles')
   .where('article_id', articleId)
   .del();
+
+// exports.getArticleById = articleId => connection
+//   .select('articles.*')
+//   .count({ comment_count: 'comments' })
+//   .from('articles')
+//   .where({ 'articles.article_id': articleId })
+//   .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+//   .groupBy('articles.article_id');

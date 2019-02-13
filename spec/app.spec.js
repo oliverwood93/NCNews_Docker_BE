@@ -162,5 +162,17 @@ describe('/api', () => {
         .then(() => request.get('/api/articles/'))
         .then(({ body }) => expect(body.articles.find(article => article.article_id === 2)).to.equal(undefined)));
     });
+    describe('/articles/:article_id/comments', () => {
+      it.only('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
+      it.only('GET request: returns an array of comments from given article ID and contains correct keys', () => request
+        .get('/api/articles/1/comments')
+        .then(({ body }) => expect(body.articleComments[0]).contain.keys(
+          'comment_id',
+          'votes',
+          'created_at',
+          'author',
+          'body',
+        )));
+    });
   });
 });
