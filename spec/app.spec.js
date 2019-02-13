@@ -139,6 +139,28 @@ describe('/api', () => {
           expect(body.article).contain.keys('comment_count');
           expect(+body.article.comment_count).to.equal(2);
         }));
+      it('PATCH request: returns a 202 status code', () => request.patch('/api/articles/1').expect(202));
+      it('PATCH request: allows updating of votes value in articles object, returns the updated article', () => request
+        .patch('/api/articles/1')
+        .send({ inc_votes: 10 })
+        .then(({ body }) => {
+          expect(body.updatedArticle.votes).to.equal(110);
+          expect(body.updatedArticle).contain.keys(
+            'article_id',
+            'title',
+            'body',
+            'votes',
+            'topic',
+            'author',
+            'created_at',
+          );
+        }));
+      it('DELETE request: responds with a 204 status code', () => request.delete('/api/articles/2').expect(204));
+      it('DELETE request: removes/deletes articles with the given article ID parameter', () => request
+        .delete('/api/articles/2')
+        .expect(204)
+        .then(() => request.get('/api/articles/'))
+        .then(({ body }) => expect(body.articles.find(article => article.article_id === 2)).to.equal(undefined)));
     });
   });
 });

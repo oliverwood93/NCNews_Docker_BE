@@ -32,3 +32,16 @@ exports.getArticleById = articleId => connection
 exports.postArticle = newArticle => connection('articles')
   .insert(newArticle)
   .returning('*');
+
+exports.patchArticleVotes = (articleId, inc_votes) => connection
+  .select('*')
+  .from('articles')
+  .where('article_id', articleId)
+  .increment('votes', inc_votes)
+  .returning('*');
+
+exports.deleteArticle = articleId => connection
+  .select('*')
+  .from('articles')
+  .where('article_id', articleId)
+  .del();
