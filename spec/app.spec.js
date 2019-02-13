@@ -197,7 +197,7 @@ describe('/api', () => {
           expect(body.articleComments[2].comment_id).to.equal(7);
           expect(body.articleComments).to.have.length(3);
         }));
-      it.only('POST request: responds with a 201 status and returns the posted comment with correct keys', () => {
+      it('POST request: responds with a 201 status and returns the posted comment with correct keys', () => {
         const newComment = {
           username: 'butter_bridge',
           body: 'This is testing that the post works',
@@ -217,9 +217,28 @@ describe('/api', () => {
             );
           });
       });
-      // it('PATCH request: responds with 202 status and the updated comment', () => {
-
-      // });
+    });
+    describe.only('/comments/:comment_id', () => {
+      it('PATCH request: responds with 202 status and the updated comment', () => {
+        const incVotes = { inc_votes: 12 };
+        return request
+          .patch('/api/comments/2')
+          .send(incVotes)
+          .expect(202)
+          .then(({ body }) => {
+            expect(body.updatedComment).contain.keys(
+              'comment_id',
+              'author',
+              'article_id',
+              'comment_id',
+              'votes',
+              'created_at',
+              'body',
+            );
+            expect(body.updatedComment.votes).to.equal(26);
+          });
+      });
+      it('DELETE request: responds with 204 and removes comment from database', () => request.delete('/api/comments/3').expect(204));
     });
   });
 });
