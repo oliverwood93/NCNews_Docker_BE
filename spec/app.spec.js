@@ -244,5 +244,12 @@ describe('/api', () => {
         .then(() => request.get('/api/articles/1/comments?limit=15').expect(200))
         .then(({ body }) => expect(body.articleComments).to.have.length(12)));
     });
+    describe('/users', () => {
+      it('GET request: responds with a 200 status', () => request.get('/api/users').expect(200));
+      it('GET request: returns an array of user objects with correct keys', () => request.get('/api/users').then(({ body }) => {
+        expect(body.users[0]).have.keys('username', 'avatar_url', 'name');
+        expect(body.users).have.length(3);
+      }));
+    });
   });
 });
