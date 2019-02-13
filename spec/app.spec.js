@@ -207,7 +207,6 @@ describe('/api', () => {
           .send(newComment)
           .expect(201)
           .then(({ body }) => {
-            console.log(body.postedComment);
             expect(body.postedComment).contain.keys(
               'author',
               'comment_id',
@@ -218,7 +217,7 @@ describe('/api', () => {
           });
       });
     });
-    describe.only('/comments/:comment_id', () => {
+    describe('/comments/:comment_id', () => {
       it('PATCH request: responds with 202 status and the updated comment', () => {
         const incVotes = { inc_votes: 12 };
         return request
@@ -238,7 +237,12 @@ describe('/api', () => {
             expect(body.updatedComment.votes).to.equal(26);
           });
       });
-      it('DELETE request: responds with 204 and removes comment from database', () => request.delete('/api/comments/3').expect(204));
+      it('DELETE request: responds with 204 and removes comment from database', () => request
+        .get('/api/articles/1/comments?limit=15')
+        .then(({ body }) => expect(body.articleComments).to.have.length(13))
+        .then(() => request.delete('/api/comments/5').expect(204))
+        .then(() => request.get('/api/articles/1/comments?limit=15').expect(200))
+        .then(({ body }) => expect(body.articleComments).to.have.length(12)));
     });
   });
 });
