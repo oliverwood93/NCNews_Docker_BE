@@ -42,8 +42,11 @@ exports.updateArticleVotesById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
   patchArticleVotes(article_id, inc_votes)
-    .then(([updatedArticle]) => res.status(200).send({ updatedArticle }))
-    .catch(console.log);
+    .then(([updatedArticle]) => {
+      if (!updatedArticle) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
+      res.status(200).send({ updatedArticle });
+    })
+    .catch(next);
 };
 
 exports.deleteArticleById = (req, res, next) => {
@@ -75,6 +78,9 @@ exports.addArticleComment = (req, res, next) => {
   const { article_id } = req.params;
   const commentData = req.body;
   postComment(article_id, commentData)
-    .then(([postedComment]) => res.status(201).send({ postedComment }))
-    .catch(console.log);
+    .then(([postedComment]) => {
+      if (!postedComment) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
+      res.status(201).send({ postedComment });
+    })
+    .catch(next);
 };

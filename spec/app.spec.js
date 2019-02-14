@@ -189,7 +189,7 @@ describe('/api', () => {
         .expect(204)
         .then(() => request.get('/api/articles/'))
         .then(({ body }) => expect(body.articles.find(article => article.article_id === 1)).to.equal(undefined)));
-      describe.only('ERROR TESTING', () => {
+      describe('ERROR TESTING', () => {
         it('GET: returns 404 when articles id does not exist', () => request
           .get('/api/articles/200')
           .expect(404)
@@ -198,6 +198,11 @@ describe('/api', () => {
           .delete('/api/articles/200')
           .expect(404)
           .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist Or May Have Been Removed')));
+        it('PATCH: returns 404 when articles id does not exist', () => request
+          .patch('/api/articles/200')
+          .send({ inc_votes: 20 })
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
       });
     });
     describe('/articles/:article_id/comments', () => {
@@ -259,6 +264,10 @@ describe('/api', () => {
           .get('/api/articles/1111/comments')
           .expect(404)
           .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+        it('POST: returns 404 when articles id does not exist', () => request
+          .get('/api/articles/1111/comments')
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
       });
     });
     describe('/comments/:comment_id', () => {
@@ -306,11 +315,11 @@ describe('/api', () => {
           });
       });
       describe('/users/:username', () => {
-        it('GET request: responds with a 200 status code', () => request.get('/api/users/3').expect(200));
+        it('GET request: responds with a 200 status code', () => request.get('/api/users/rogersop').expect(200));
         it('GET request: responds with a user object containing all correct keys', () => request
           .get('/api/users/icellusedkars')
           .then(({ body }) => expect(body.user).have.keys('username', 'avatar_url', 'name')));
-        describe.only('ERROR TESTING', () => {
+        describe('ERROR TESTING', () => {
           it('GET: returns 404 when username is given as a paramter that does not exist', () => request
             .get('/api/users/bob')
             .expect(404)
