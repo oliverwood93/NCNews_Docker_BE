@@ -11,8 +11,10 @@ const {
 exports.sendArticles = (req, res, next) => {
   getArticles(req.query)
     .then((returnedArticles) => {
+      const articles = returnedArticles[0];
+      articles.forEach(article => delete article.body);
       const { numOfArticles } = returnedArticles[1][0];
-      res.status(200).send({ numOfArticles, articles: returnedArticles[0] });
+      res.status(200).send({ numOfArticles, articles });
     })
     .catch(console.log);
 };

@@ -42,13 +42,14 @@ describe('/api', () => {
       it('GET request: responds with a 200 status', () => request.get('/api/articles').expect(200));
       it('GET request: returns an array of article object with the main keys', () => request.get('/api/articles').then(({ body }) => {
         expect(body.articles).to.be.an('array');
-        expect(body.articles[0]).to.contain.keys(
+        expect(body.articles[0]).to.have.keys(
           'author',
           'title',
           'article_id',
           'topic',
           'created_at',
           'votes',
+          'comment_count',
         );
       }));
       it('GET request: must also have a numOfArticles that displays correct number of articles displayed', () => request
