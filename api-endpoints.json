@@ -13,7 +13,7 @@
       },
       "/:article_id": {
         "GET": "200 status and returns an object of the specificed article",
-        "PATCH": "202 status and returns an object of the updated article",
+        "PATCH": "200 status and returns an object of the updated article",
         "DELETE": "204 status, deletes specified article and returns no content"
       },
       "/:article_id/comments": {
@@ -29,7 +29,7 @@
     },
     "/comments": {
       "/:comment_id": {
-        "PATCH": "202 status and returns an object of the updated comment",
+        "PATCH": "200 status and returns an object of the updated comment",
         "DELETE": "204 status, deletes specified comment and returns no content"
       }
     }

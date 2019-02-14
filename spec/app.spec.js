@@ -11,6 +11,20 @@ describe('/api', () => {
   after(() => connection.destroy());
 
   describe('/api', () => {
+    describe('ERROR TESTING', () => {
+      it('responds with a 404 if endpoint is incorrect or does not exist regardless of method', () => request
+        .get('/sdsdsdsd')
+        .expect(404)
+        .then(({ body }) => expect(body.msg).to.equal('ERROR_404_PAGE_NOT_FOUND'))
+        .then(() => request
+          .patch('/api/articlesf')
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR_404_PAGE_NOT_FOUND')))
+        .then(() => request
+          .delete('/api/topdf')
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR_404_PAGE_NOT_FOUND'))));
+    });
     it('GET request: responds with status 200', () => request.get('/api').expect(200));
     it('GET request: returns an object containing all the endpoints and descriptions of endpoints', () => request.get('/api').then(({ body }) => {
       expect(body).to.be.a('object');
@@ -153,7 +167,7 @@ describe('/api', () => {
           expect(body.article).contain.keys('comment_count');
           expect(+body.article.comment_count).to.equal(2);
         }));
-      it('PATCH request: returns a 202 status code', () => request.patch('/api/articles/1').expect(202));
+      it('PATCH request: returns a 200 status code', () => request.patch('/api/articles/1').expect(200));
       it('PATCH request: allows updating of votes value in articles object, returns the updated article', () => request
         .patch('/api/articles/1')
         .send({ inc_votes: 10 })
@@ -175,6 +189,12 @@ describe('/api', () => {
         .expect(204)
         .then(() => request.get('/api/articles/'))
         .then(({ body }) => expect(body.articles.find(article => article.article_id === 1)).to.equal(undefined)));
+      describe('ERROR TESTING', () => {
+        it('GET: returns 404 when articles id does not exist', () => request
+          .get('/api/articles/200')
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+      });
     });
     describe('/articles/:article_id/comments', () => {
       it('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
@@ -230,14 +250,20 @@ describe('/api', () => {
             );
           });
       });
+      describe.only('ERROR TESTING', () => {
+        it('GET: returns 404 when articles id does not exist', () => request
+          .get('/api/articles/1111/comments')
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+      });
     });
     describe('/comments/:comment_id', () => {
-      it('PATCH request: responds with 202 status and the updated comment', () => {
+      it('PATCH request: responds with 200 status and the updated comment', () => {
         const incVotes = { inc_votes: 12 };
         return request
           .patch('/api/comments/2')
           .send(incVotes)
-          .expect(202)
+          .expect(200)
           .then(({ body }) => {
             expect(body.updatedComment).contain.keys(
               'comment_id',
