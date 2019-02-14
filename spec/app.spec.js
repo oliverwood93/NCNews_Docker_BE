@@ -261,6 +261,9 @@ describe('/api', () => {
             expect(body.addedUser).have.keys('username', 'avatar_url', 'name');
           });
       });
+      describe('/users/:username', () => {
+        it('GET request: responds with a 200 status code', () => request.get('/api/users/3').expect(200));
+      });
     });
   });
 });
