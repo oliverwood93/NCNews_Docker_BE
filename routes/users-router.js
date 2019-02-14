@@ -1,9 +1,11 @@
 const usersRouter = require('express').Router();
-const { sendUsers, addUser } = require('../controllers/users');
+const { sendUsers, addUser, sendUserById } = require('../controllers/users');
 
 usersRouter
   .route('/')
   .get(sendUsers)
   .post(addUser);
+
+usersRouter.route('/:username').get(sendUserById);
 
 module.exports = usersRouter;

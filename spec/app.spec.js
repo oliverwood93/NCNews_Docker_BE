@@ -11,6 +11,7 @@ describe('/api', () => {
   after(() => connection.destroy());
 
   describe('/api', () => {
+    it.only('GET request: responds with status 200', () => request.get('/api').expect(200));
     describe('/topics', () => {
       it('GET request: responds with a status 200', () => request.get('/api/topics').expect(200));
       it('GET request: returns an array of topic objects all containing the correct keys', () => request
@@ -263,6 +264,9 @@ describe('/api', () => {
       });
       describe('/users/:username', () => {
         it('GET request: responds with a 200 status code', () => request.get('/api/users/3').expect(200));
+        it('GET request: responds with a user object containing all correct keys', () => request
+          .get('/api/users/icellusedkars')
+          .then(({ body }) => expect(body.user).have.keys('username', 'avatar_url', 'name')));
       });
     });
   });

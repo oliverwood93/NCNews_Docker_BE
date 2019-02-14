@@ -11,3 +11,10 @@ exports.addUser = (req, res, next) => {
     res.status(201).send({ addedUser });
   });
 };
+
+exports.sendUserById = (req, res, next) => {
+  const username = req.params;
+  getUsers(username).then(([user]) => {
+    res.status(200).send({ user });
+  });
+};
