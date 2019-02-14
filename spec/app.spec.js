@@ -11,7 +11,11 @@ describe('/api', () => {
   after(() => connection.destroy());
 
   describe('/api', () => {
-    it.only('GET request: responds with status 200', () => request.get('/api').expect(200));
+    it('GET request: responds with status 200', () => request.get('/api').expect(200));
+    it('GET request: returns an object containing all the endpoints and descriptions of endpoints', () => request.get('/api').then(({ body }) => {
+      expect(body).to.be.a('object');
+      expect(body).have.keys('/api', '/topics', '/users');
+    }));
     describe('/topics', () => {
       it('GET request: responds with a status 200', () => request.get('/api/topics').expect(200));
       it('GET request: returns an array of topic objects all containing the correct keys', () => request

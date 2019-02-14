@@ -59,10 +59,3 @@ exports.postComment = (articleId, commentData) => {
     .insert({ article_id: articleId, author: username, body })
     .returning('*');
 };
-// exports.getArticleById = articleId => connection
-//   .select('articles.*')
-//   .count({ comment_count: 'comments' })
-//   .from('articles')
-//   .where({ 'articles.article_id': articleId })
-//   .leftJoin('comments', 'comments.article_id', 'articles.article_id')
-//   .groupBy('articles.article_id');

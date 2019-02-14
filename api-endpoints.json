@@ -1,0 +1,45 @@
+{
+  "/api": {
+    "/articles": {
+      "/": {
+        "GET": "200 status and returns an array of all the article objects. (Constrained by limit default value)",
+        "POST": "201 status and returns an object of the posted article",
+        "QUERY": {
+          "?sort_by={columnName}": "200 status and returns array of all article objects sorted by a given column name. Sorted by 'created_at' column and descending order by default. (Constrained by limit default value)",
+          "?order={asc/desc}": "200 status and returns an array of all article objects sorted in either ascending or descending order which by default is set to descending. (Constrained by limit default value)",
+          "?limit={intger}": "200 status and returns an array of article objects limited to the integer provided, which by default is 10",
+          "?p={integer}": "200 status and works as pagination so other rows in the next limit bracket can be viewed"
+        }
+      },
+      "/:article_id": {
+        "GET": "200 status and returns an object of the specificed article",
+        "PATCH": "202 status and returns an object of the updated article",
+        "DELETE": "204 status, deletes specified article and returns no content"
+      },
+      "/:article_id/comments": {
+        "GET": "200 status and returns an array of all the comment objects for the specified article",
+        "POST": "201 status and returns an object of the posted comment",
+        "QUERY": {
+          "?sort_by={columnName}": "200 status and returns array of all the comment objects for the specified article sorted by a given column name. Sorted by 'created_at' column and descending order by default",
+          "?order={asc/desc}": "200 status and returns an array of all the comment objects for the specified article sorted in either ascending or descending order (by default set to descending)",
+          "?limit={intger}": "200 status and returns an array of the comment objects for the specified article limited to the integer provided, which by default is 10",
+          "?p={integer}": "200 status and works as pagination so other rows in the next limit bracket can be viewed"
+        }
+      }
+    },
+    "/comments": {
+      "/:comment_id": {
+        "PATCH": "202 status and returns an object of the updated comment",
+        "DELETE": "204 status, deletes specified comment and returns no content"
+      }
+    }
+  },
+  "/topics": {
+    "GET": "200 status and returns an array of all the topic objects",
+    "POST": "201 status and returns an object of the posted topic"
+  },
+  "/users": {
+    "GET": "200 status and returns an array of all the user objects",
+    "POST": "201 status and returns an object of the posted user"
+  }
+}
