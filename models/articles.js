@@ -11,16 +11,19 @@ exports.getArticles = ({
 }) => {
   if (author) whereQuery['articles.author'] = author;
   if (article_id) whereQuery['articles.article_id'] = article_id;
-  return connection
-    .select('articles.*')
-    .count({ comment_count: 'comments.comment_id' })
-    .from('articles')
-    .where(whereQuery)
-    .orderBy(sort_by, order)
-    .leftJoin('comments', 'comments.article_id', 'articles.article_id')
-    .groupBy('articles.article_id')
-    .offset(limit * p - limit)
-    .limit(limit);
+  return Promise.all([
+    connection
+      .select('articles.*')
+      .count({ comment_count: 'comments.comment_id' })
+      .from('articles')
+      .where(whereQuery)
+      .orderBy(sort_by, order)
+      .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+      .groupBy('articles.article_id')
+      .offset(limit * p - limit)
+      .limit(limit),
+    connection('articles').count('article_id as numOfArticles'),
+  ]);
 };
 
 exports.getArticleComments = (

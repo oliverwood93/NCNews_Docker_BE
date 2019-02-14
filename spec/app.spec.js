@@ -51,6 +51,14 @@ describe('/api', () => {
           'votes',
         );
       }));
+      it('GET request: must also have a numOfArticles that displays correct number of articles displayed', () => request
+        .get('/api/articles')
+        .then(({ body }) => {
+          expect(+body.numOfArticles).to.equal(12);
+        })
+        .then(() => request
+          .get('/api/articles?limit=3')
+          .then(({ body }) => expect(+body.numOfArticles).to.equal(12))));
       it('GET request: must have a comment_count key which has the correct value', () => request.get('/api/articles').then(({ body }) => {
         expect(body.articles[0]).to.contain.keys('comment_count');
         expect(+body.articles[0].comment_count).to.be.a('number');
@@ -169,15 +177,15 @@ describe('/api', () => {
     });
     describe('/articles/:article_id/comments', () => {
       it('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
-      it('GET request: returns an array of comments from given article ID and contains correct keys', () => request
-        .get('/api/articles/1/comments')
-        .then(({ body }) => expect(body.articleComments[0]).contain.keys(
+      it('GET request: returns an array of comments from given article ID and contains correct keys', () => request.get('/api/articles/1/comments').then(({ body }) => {
+        expect(body.articleComments[0]).contain.keys(
           'comment_id',
           'votes',
           'created_at',
           'author',
           'body',
-        )));
+        );
+      }));
       it('GET/QUERY: sort by and ordering of results defaults to date and descending', () => request
         .get('/api/articles/1/comments')
         .expect(200)

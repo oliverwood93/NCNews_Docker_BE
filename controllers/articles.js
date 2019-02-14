@@ -10,7 +10,10 @@ const {
 
 exports.sendArticles = (req, res, next) => {
   getArticles(req.query)
-    .then(articles => res.status(200).send({ articles }))
+    .then((returnedArticles) => {
+      const { numOfArticles } = returnedArticles[1][0];
+      res.status(200).send({ numOfArticles, articles: returnedArticles[0] });
+    })
     .catch(console.log);
 };
 
@@ -24,7 +27,10 @@ exports.addArticle = (req, res, next) => {
 
 exports.sendArticleById = (req, res, next) => {
   const article_id = req.params;
-  getArticles(article_id).then(([article]) => res.status(200).send({ article }));
+  getArticles(article_id).then((returnedArticle) => {
+    const [article] = returnedArticle[0];
+    res.status(200).send({ article });
+  });
 };
 
 exports.updateArticleVotesById = (req, res, next) => {
@@ -44,7 +50,9 @@ exports.deleteArticleById = (req, res, next) => {
 
 exports.sendArticleComments = (req, res, next) => {
   const { article_id } = req.params;
-  getArticleComments(article_id, req.query).then(articleComments => res.status(200).send({ articleComments }));
+  getArticleComments(article_id, req.query).then((articleComments) => {
+    res.status(200).send({ articleComments });
+  });
 };
 
 exports.addArticleComment = (req, res, next) => {
