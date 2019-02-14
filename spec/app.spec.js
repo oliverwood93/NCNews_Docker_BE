@@ -47,7 +47,7 @@ describe('/api', () => {
           .send(newTopic)
           .expect(201)
           .then(({ body }) => {
-            expect(body).to.eql({ msg: 'Topic Added Successfully: This is the slug' });
+            expect(body.addedTopic).have.keys('slug', 'description');
           })
           .then(() => request.get('/api/topics').then(({ body }) => expect(body.topics).to.have.length(3)));
       });
@@ -189,11 +189,15 @@ describe('/api', () => {
         .expect(204)
         .then(() => request.get('/api/articles/'))
         .then(({ body }) => expect(body.articles.find(article => article.article_id === 1)).to.equal(undefined)));
-      describe('ERROR TESTING', () => {
+      describe.only('ERROR TESTING', () => {
         it('GET: returns 404 when articles id does not exist', () => request
           .get('/api/articles/200')
           .expect(404)
           .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+        it('DELETE: returns 404 when articles id does not exist', () => request
+          .delete('/api/articles/200')
+          .expect(404)
+          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist Or May Have Been Removed')));
       });
     });
     describe('/articles/:article_id/comments', () => {
@@ -250,7 +254,7 @@ describe('/api', () => {
             );
           });
       });
-      describe.only('ERROR TESTING', () => {
+      describe('ERROR TESTING', () => {
         it('GET: returns 404 when articles id does not exist', () => request
           .get('/api/articles/1111/comments')
           .expect(404)
@@ -306,6 +310,12 @@ describe('/api', () => {
         it('GET request: responds with a user object containing all correct keys', () => request
           .get('/api/users/icellusedkars')
           .then(({ body }) => expect(body.user).have.keys('username', 'avatar_url', 'name')));
+        describe.only('ERROR TESTING', () => {
+          it('GET: returns 404 when username is given as a paramter that does not exist', () => request
+            .get('/api/users/bob')
+            .expect(404)
+            .then(({ body }) => expect(body.msg).to.equal('ERROR: User Does Not Exist')));
+        });
       });
     });
   });

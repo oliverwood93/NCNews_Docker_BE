@@ -49,8 +49,16 @@ exports.updateArticleVotesById = (req, res, next) => {
 exports.deleteArticleById = (req, res, next) => {
   const { article_id } = req.params;
   deleteArticle(article_id)
-    .then(() => res.status(204).send())
-    .catch(console.log);
+    .then((deleted) => {
+      if (!deleted) {
+        return Promise.reject({
+          status: 404,
+          msg: 'ERROR: Article Does Not Exist Or May Have Been Removed',
+        });
+      }
+      res.status(204).send();
+    })
+    .catch(next);
 };
 
 exports.sendArticleComments = (req, res, next) => {

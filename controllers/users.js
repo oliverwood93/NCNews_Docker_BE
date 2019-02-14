@@ -19,7 +19,8 @@ exports.sendUserById = (req, res, next) => {
   const username = req.params;
   getUsers(username)
     .then(([user]) => {
+      if (!user) return Promise.reject({ status: 404, msg: 'ERROR: User Does Not Exist' });
       res.status(200).send({ user });
     })
-    .catch(console.log);
+    .catch(next);
 };
