@@ -250,6 +250,17 @@ describe('/api', () => {
         expect(body.users[0]).have.keys('username', 'avatar_url', 'name');
         expect(body.users).have.length(3);
       }));
+      it('POST request: responds with a 201 status and returns the posted user with all correct keys', () => {
+        const newUser = { username: 'user5555', avatar_url: 'www.test.com/jpg', name: 'Mark' };
+        return request
+          .post('/api/users')
+          .send(newUser)
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.addedUser.name).to.equal('Mark');
+            expect(body.addedUser).have.keys('username', 'avatar_url', 'name');
+          });
+      });
     });
   });
 });
