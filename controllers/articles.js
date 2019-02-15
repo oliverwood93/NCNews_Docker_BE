@@ -1,7 +1,6 @@
 const {
   getArticles,
   postArticle,
-  getArticleById,
   patchArticleVotes,
   deleteArticle,
   getArticleComments,

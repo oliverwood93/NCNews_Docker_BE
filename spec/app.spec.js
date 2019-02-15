@@ -63,7 +63,7 @@ describe('/api', () => {
             .send(newTopic)
             .expect(400)
             .then(({ body }) => expect(body.ERROR).to.equal(
-              'BAD_REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
+              'BAD REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
             ));
         });
         it('POST: returns 422 if topic primary key (slug) is already in use', () => {

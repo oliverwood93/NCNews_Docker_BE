@@ -1,9 +1,10 @@
 exports.handle400 = (err, req, res, next) => {
-  const badRequestCodes = {
+  const errorCodes400 = {
     '22P02': 'BAD REQUEST: INVALID INPUT SYNTAX',
-    23502: 'BAD_REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
+    23502: 'BAD REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
+    42703: 'BAD REQUEST: INVALID DATA INPUT',
   };
-  if (badRequestCodes[err.code]) res.status(400).send({ ERROR: badRequestCodes[err.code] });
+  if (errorCodes400[err.code]) res.status(400).send({ ERROR: errorCodes400[err.code] });
   else if (err.status === 400) res.status(400).send({ ERROR: err.msg });
   else next(err);
 };
@@ -30,5 +31,6 @@ exports.handle422 = (err, req, res, next) => {
 };
 
 exports.handle500 = (err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ msg: 'SERVER_ERROR_500' });
 };

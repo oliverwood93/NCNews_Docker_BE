@@ -11,6 +11,7 @@ exports.getArticles = ({
 }) => {
   if (author) whereQuery['articles.author'] = author;
   if (article_id) whereQuery['articles.article_id'] = article_id;
+  if (limit <= 0) limit = 10;
   return Promise.all([
     connection
       .select('articles.*')
