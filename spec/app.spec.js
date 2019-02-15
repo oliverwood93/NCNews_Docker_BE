@@ -335,17 +335,6 @@ describe('/api', () => {
           .get('/api/articles/1111/comments')
           .expect(404)
           .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
-        it('POST: returs 400 when articles id exists but input data is empty', () => {
-          const newComment = {
-            username: 'butter_bridge',
-            body: '',
-          };
-          return request
-            .post('/api/articles/2/comments')
-            .send(newComment)
-            .expect(400)
-            .then(({ body }) => expect(body.ERROR).to.equal('ERROR: COMMENT CANNOT BE EMPTY'));
-        });
         it('POST: returns 422 when relational foreign key is in the correct form but not present in db', () => {
           const newComment = {
             username: 'butter_br',

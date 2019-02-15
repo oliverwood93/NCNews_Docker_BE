@@ -78,7 +78,6 @@ exports.sendArticleComments = (req, res, next) => {
 exports.addArticleComment = (req, res, next) => {
   const { article_id } = req.params;
   const commentData = req.body;
-  if (commentData.body.length === 0) next({ status: 400, msg: 'ERROR: COMMENT CANNOT BE EMPTY' });
   postComment(article_id, commentData)
     .then(([postedComment]) => {
       if (!postedComment) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
