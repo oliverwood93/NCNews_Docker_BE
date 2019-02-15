@@ -16,7 +16,6 @@ app.use(handle400);
 app.use(handle404);
 
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: 'SERVER_ERROR_500' });
 });
 

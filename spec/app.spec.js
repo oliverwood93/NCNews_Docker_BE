@@ -167,10 +167,10 @@ describe('/api', () => {
           expect(body.article).contain.keys('comment_count');
           expect(+body.article.comment_count).to.equal(2);
         }));
-      it('PATCH request: returns a 200 status code', () => request.patch('/api/articles/1').expect(200));
-      it.only('PATCH request: allows updating of votes value in articles object, returns the updated article', () => request
+      it('PATCH request: responds with 200 allows updating of votes value in articles object, returns the updated article', () => request
         .patch('/api/articles/1')
         .send({ inc_votes: 10 })
+        .expect(200)
         .then(({ body }) => {
           expect(body.updatedArticle.votes).to.equal(110);
           expect(body.updatedArticle).contain.keys(
@@ -193,16 +193,18 @@ describe('/api', () => {
         it('GET: returns 404 when articles id does not exist', () => request
           .get('/api/articles/200')
           .expect(404)
-          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+          .then(({ body }) => {
+            expect(body.ERROR).to.equal('ERROR: Article Does Not Exist');
+          }));
         it('DELETE: returns 404 when articles id does not exist', () => request
           .delete('/api/articles/200')
           .expect(404)
-          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist Or May Have Been Removed')));
+          .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist Or May Have Been Removed')));
         it('PATCH: returns 404 when articles id does not exist', () => request
           .patch('/api/articles/200')
           .send({ inc_votes: 20 })
           .expect(404)
-          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+          .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
       });
     });
     describe('/articles/:article_id/comments', () => {
@@ -263,11 +265,11 @@ describe('/api', () => {
         it('GET: returns 404 when articles id does not exist', () => request
           .get('/api/articles/1111/comments')
           .expect(404)
-          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+          .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
         it('POST: returns 404 when articles id does not exist', () => request
           .get('/api/articles/1111/comments')
           .expect(404)
-          .then(({ body }) => expect(body.msg).to.equal('ERROR: Article Does Not Exist')));
+          .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
       });
     });
     describe('/comments/:comment_id', () => {
@@ -323,7 +325,7 @@ describe('/api', () => {
           it('GET: returns 404 when username is given as a paramter that does not exist', () => request
             .get('/api/users/bob')
             .expect(404)
-            .then(({ body }) => expect(body.msg).to.equal('ERROR: User Does Not Exist')));
+            .then(({ body }) => expect(body.ERROR).to.equal('ERROR: User Does Not Exist')));
         });
       });
     });
