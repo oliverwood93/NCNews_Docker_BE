@@ -15,6 +15,14 @@ exports.updateCommentVotesById = (req, res, next) => {
 exports.deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
   deleteComment(comment_id)
-    .then(() => res.status(204).send({}))
+    .then((deleted) => {
+      if (!deleted) {
+        return Promise.reject({
+          status: 404,
+          msg: 'ERROR: Comment Does Not Exist Or May Have Been Removed',
+        });
+      }
+      res.status(204).send({});
+    })
     .catch(next);
 };

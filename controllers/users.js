@@ -12,7 +12,7 @@ exports.addUser = (req, res, next) => {
     .then(([addedUser]) => {
       res.status(201).send({ addedUser });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 exports.sendUserById = (req, res, next) => {

@@ -370,6 +370,10 @@ describe('/api', () => {
             .expect(400)
             .then(({ body }) => expect(body.ERROR).to.equal('ERROR: INVALID DATA INPUT'));
         });
+        it('DELETE: responds with 400 if comment does not exist ', () => request
+          .delete('/api/comments/9000')
+          .expect(404)
+          .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Comment Does Not Exist Or May Have Been Removed')));
       });
     });
     describe('/users', () => {
@@ -399,6 +403,10 @@ describe('/api', () => {
             .get('/api/users/bob')
             .expect(404)
             .then(({ body }) => expect(body.ERROR).to.equal('ERROR: User Does Not Exist')));
+          it('POST: responds with 422 if user is added and username already exists', () => {
+            const newUser = { username: 'rogersop', avatar_url: 'www.test.com/jpg', name: 'Mark' };
+            return request.post('/api/users').send(newUser).expect(422);
+          });
         });
       });
     });

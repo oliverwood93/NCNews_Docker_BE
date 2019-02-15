@@ -23,6 +23,7 @@ exports.handle405 = (err, req, res, next) => {
 exports.handle422 = (err, req, res, next) => {
   const errorCodes422 = {
     23503: 'UNPROCESSABLE ENTITY: PLEASE REVIEW DATA',
+    23505: 'UNPROCESSABLE ENTITY: DATA ALREADY IN USE',
   };
 
   if (errorCodes422[err.code]) res.status(422).send({ ERROR: errorCodes422[err.code] });
