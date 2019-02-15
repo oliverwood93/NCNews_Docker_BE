@@ -1,7 +1,9 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
 const apiRouter = require('./routes/api-router');
-const { handle404, handle400, handle422 } = require('./error_handling');
+const {
+  handle404, handle400, handle422, handle500,
+} = require('./error_handling');
 
 app.use(bodyParser.json());
 
@@ -17,8 +19,6 @@ app.use(handle404);
 
 app.use(handle422);
 
-app.use((err, req, res, next) => {
-  res.status(500).send({ msg: 'SERVER_ERROR_500' });
-});
+app.use(handle500);
 
 module.exports = app;

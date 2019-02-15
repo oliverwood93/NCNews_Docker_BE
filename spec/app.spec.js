@@ -24,6 +24,10 @@ describe('/api', () => {
           .delete('/api/topdf')
           .expect(404)
           .then(({ body }) => expect(body.msg).to.equal('ERROR_404_PAGE_NOT_FOUND'))));
+      it('POST/DELETE/PATCH/PUT: returns 405 if an invalid method is selected', () => request
+        .post('/api')
+        .expect(405)
+        .then(({ body }) => expect(body.ERROR).to.equal('INVALID METHOD USED ON REQUEST')));
     });
     it('GET request: responds with status 200', () => request.get('/api').expect(200));
     it('GET request: returns an object containing all the endpoints and descriptions of endpoints', () => request.get('/api').then(({ body }) => {
@@ -50,6 +54,30 @@ describe('/api', () => {
             expect(body.addedTopic).have.keys('slug', 'description');
           })
           .then(() => request.get('/api/topics').then(({ body }) => expect(body.topics).to.have.length(3)));
+      });
+      describe('ERROR TESTING', () => {
+        it('POST: returns 400 if data fields are null', () => {
+          const newTopic = { slug: 'test' };
+          return request
+            .post('/api/topics')
+            .send(newTopic)
+            .expect(400)
+            .then(({ body }) => expect(body.ERROR).to.equal(
+              'BAD_REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
+            ));
+        });
+        it('POST: returns 422 if topic primary key (slug) is already in use', () => {
+          const newTopic = { slug: 'mitch', description: 'this is a test' };
+          return request
+            .post('/api/topics')
+            .send(newTopic)
+            .expect(422)
+            .then(({ body }) => expect(body.ERROR).to.equal('UNPROCESSABLE ENTITY: DATA ALREADY IN USE'));
+        });
+        it('DELETE/PATCH/PUT: returns 405 if an invalid method is selected', () => request
+          .patch('/api/topics')
+          .expect(405)
+          .then(({ body }) => expect(body.ERROR).to.equal('INVALID METHOD USED ON REQUEST')));
       });
     });
     describe('/articles', () => {
@@ -238,6 +266,10 @@ describe('/api', () => {
             .expect(422)
             .then(({ body }) => expect(body.ERROR).to.equal('UNPROCESSABLE ENTITY: PLEASE REVIEW DATA'));
         });
+        it('POST: returns 405 if an invalid method is selected', () => request
+          .post('/api/articles/2')
+          .expect(405)
+          .then(({ body }) => expect(body.ERROR).to.equal('INVALID METHOD USED ON REQUEST')));
       });
     });
     describe('/articles/:article_id/comments', () => {
@@ -325,6 +357,10 @@ describe('/api', () => {
             .expect(422)
             .then(({ body }) => expect(body.ERROR).to.equal('UNPROCESSABLE ENTITY: PLEASE REVIEW DATA'));
         });
+        it('POST/PUT: returns 405 if an invalid method is selected', () => request
+          .post('/api/articles/2')
+          .expect(405)
+          .then(({ body }) => expect(body.ERROR).to.equal('INVALID METHOD USED ON REQUEST')));
       });
     });
     describe('/comments/:comment_id', () => {
@@ -374,6 +410,10 @@ describe('/api', () => {
           .delete('/api/comments/9000')
           .expect(404)
           .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Comment Does Not Exist Or May Have Been Removed')));
+        it('POST/PUT/GET: returns 405 if an invalid method is selected', () => request
+          .get('/api/comments/7')
+          .expect(405)
+          .then(({ body }) => expect(body.ERROR).to.equal('INVALID METHOD USED ON REQUEST')));
       });
     });
     describe('/users', () => {
@@ -405,8 +445,15 @@ describe('/api', () => {
             .then(({ body }) => expect(body.ERROR).to.equal('ERROR: User Does Not Exist')));
           it('POST: responds with 422 if user is added and username already exists', () => {
             const newUser = { username: 'rogersop', avatar_url: 'www.test.com/jpg', name: 'Mark' };
-            return request.post('/api/users').send(newUser).expect(422);
+            return request
+              .post('/api/users')
+              .send(newUser)
+              .expect(422);
           });
+          it('DELETE/PATCH/PUT: returns 405 if an invalid method is selected', () => request
+            .delete('/api/users')
+            .expect(405)
+            .then(({ body }) => expect(body.ERROR).to.equal('INVALID METHOD USED ON REQUEST')));
         });
       });
     });

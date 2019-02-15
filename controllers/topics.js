@@ -14,5 +14,5 @@ exports.addTopic = (req, res, next) => {
     .then(([addedTopic]) => {
       res.status(201).send({ addedTopic });
     })
-    .catch(console.log);
+    .catch(next);
 };
