@@ -168,7 +168,7 @@ describe('/api', () => {
           expect(+body.article.comment_count).to.equal(2);
         }));
       it('PATCH request: returns a 200 status code', () => request.patch('/api/articles/1').expect(200));
-      it('PATCH request: allows updating of votes value in articles object, returns the updated article', () => request
+      it.only('PATCH request: allows updating of votes value in articles object, returns the updated article', () => request
         .patch('/api/articles/1')
         .send({ inc_votes: 10 })
         .then(({ body }) => {

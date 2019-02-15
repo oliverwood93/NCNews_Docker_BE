@@ -28,8 +28,7 @@ exports.addArticle = (req, res, next) => {
 };
 
 exports.sendArticleById = (req, res, next) => {
-  const article_id = req.params;
-  getArticles(article_id)
+  getArticles(req.params)
     .then((returnedArticle) => {
       const [article] = returnedArticle[0];
       if (!returnedArticle[0][0]) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
@@ -41,12 +40,15 @@ exports.sendArticleById = (req, res, next) => {
 exports.updateArticleVotesById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  patchArticleVotes(article_id, inc_votes)
-    .then(([updatedArticle]) => {
-      if (!updatedArticle) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
-      res.status(200).send({ updatedArticle });
-    })
-    .catch(next);
+  if (!Number(inc_votes)) next({ status: 400, msg: 'ERROR: INVALID DATA INPUT' });
+  else {
+    patchArticleVotes(article_id, inc_votes)
+      .then(([updatedArticle]) => {
+        if (!updatedArticle) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
+        res.status(200).send({ updatedArticle });
+      })
+      .catch(next);
+  }
 };
 
 exports.deleteArticleById = (req, res, next) => {
