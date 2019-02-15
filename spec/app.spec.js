@@ -314,7 +314,7 @@ describe('/api', () => {
             .expect(400)
             .then(({ body }) => expect(body.ERROR).to.equal('ERROR: COMMENT CANNOT BE EMPTY'));
         });
-        it('POST: returns', () => {
+        it('POST: returns 422 when relational foreign key is in the correct form but not present in db', () => {
           const newComment = {
             username: 'butter_br',
             body: 'testinnnnggg',
@@ -353,6 +353,24 @@ describe('/api', () => {
         .then(() => request.delete('/api/comments/5').expect(204))
         .then(() => request.get('/api/articles/1/comments?limit=15').expect(200))
         .then(({ body }) => expect(body.articleComments).to.have.length(12)));
+      describe('ERROR TESTING', () => {
+        it('PATCH: responds with 400 if passed a comment id that does not exist', () => {
+          const incVotes = { inc_votes: 12 };
+          return request
+            .patch('/api/comments/9000')
+            .send(incVotes)
+            .expect(404)
+            .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Comment Does Not Exist'));
+        });
+        it('PATCH: responds with 400 if passed a comment that is not in correct format ', () => {
+          const incVotes = { inc_votes: 'dfgh' };
+          return request
+            .patch('/api/comments/3')
+            .send(incVotes)
+            .expect(400)
+            .then(({ body }) => expect(body.ERROR).to.equal('ERROR: INVALID DATA INPUT'));
+        });
+      });
     });
     describe('/users', () => {
       it('GET request: responds with a 200 status', () => request.get('/api/users').expect(200));
