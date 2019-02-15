@@ -4,17 +4,24 @@ exports.getArticles = ({
   sort_by = 'created_at',
   order = 'desc',
   limit = 10,
-  p,
+  p = 1,
   author,
-  article_id,
   ...whereQuery
 }) => {
   if (author) whereQuery['articles.author'] = author;
-  if (article_id) whereQuery['articles.article_id'] = article_id;
   if (limit <= 0) limit = 10;
   return Promise.all([
     connection
-      .select('articles.*')
+      .select(
+        'articles.author',
+        'articles.article_id',
+        'articles.title',
+        'articles.body',
+        'articles.votes',
+        'articles.topic',
+        'articles.author',
+        'articles.created_at',
+      )
       .count({ comment_count: 'comments.comment_id' })
       .from('articles')
       .where(whereQuery)
@@ -23,25 +30,33 @@ exports.getArticles = ({
       .groupBy('articles.article_id')
       .offset(limit * p - limit)
       .limit(limit),
-    connection('articles').count('article_id as numOfArticles'),
+    connection('articles').count('article_id as total_count'),
   ]);
 };
 
+exports.getArticleById = article_id => connection
+  .select('articles.*')
+  .count({ comment_count: 'comments.comment_id' })
+  .from('articles')
+  .where('articles.article_id', article_id)
+  .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+  .groupBy('articles.article_id');
+
 exports.getArticleComments = (
-  articleId,
+  article_id,
   {
     sort_by = 'created_at', order = 'desc', limit = 10, p,
   },
 ) => connection
   .select('comment_id', 'votes', 'created_at', 'author', 'body')
   .from('comments')
-  .where('article_id', articleId)
+  .where({ article_id })
   .orderBy(sort_by, order)
   .offset(limit * p - limit)
   .limit(limit);
 
-exports.postArticle = newArticle => connection('articles')
-  .insert(newArticle)
+exports.postArticle = articleData => connection('articles')
+  .insert(articleData)
   .returning('*');
 
 exports.patchArticleVotes = (articleId, inc_votes) => connection

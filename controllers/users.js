@@ -7,15 +7,12 @@ exports.sendUsers = (req, res, next) => {
 };
 
 exports.addUser = (req, res, next) => {
-  const userData = req.body;
-  if (!userData.username) next({ status: 400, msg: 'ERROR: USERNAME VIOLATES NOT NULL CONSTRAINT' });
-  else {
-    postUser(userData)
-      .then(([addedUser]) => {
-        res.status(201).send({ addedUser });
-      })
-      .catch(next);
-  }
+  const { username, name, avatar_url } = req.body;
+  postUser({ username, name, avatar_url })
+    .then(([user]) => {
+      res.status(201).send({ user });
+    })
+    .catch(next);
 };
 
 exports.sendUserById = (req, res, next) => {

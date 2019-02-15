@@ -7,8 +7,8 @@ exports.patchCommentVotes = (commentId, inc_votes) => connection
   .increment('votes', inc_votes)
   .returning('*');
 
-exports.deleteComment = commentId => connection
+exports.deleteComment = comment_id => connection
   .select('*')
   .from('comments')
-  .where('comment_id', commentId)
+  .where({ comment_id })
   .del();

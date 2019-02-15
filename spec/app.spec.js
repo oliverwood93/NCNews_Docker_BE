@@ -51,7 +51,7 @@ describe('/api', () => {
           .send(newTopic)
           .expect(201)
           .then(({ body }) => {
-            expect(body.addedTopic).have.keys('slug', 'description');
+            expect(body.topic).have.keys('slug', 'description');
           })
           .then(() => request.get('/api/topics').then(({ body }) => expect(body.topics).to.have.length(3)));
       });
@@ -94,14 +94,14 @@ describe('/api', () => {
           'comment_count',
         );
       }));
-      it('GET request: must also have a numOfArticles that displays correct number of articles displayed', () => request
+      it('GET request: must also have a total_count that displays correct number of articles displayed', () => request
         .get('/api/articles')
         .then(({ body }) => {
-          expect(+body.numOfArticles).to.equal(12);
+          expect(+body.total_count).to.equal(12);
         })
         .then(() => request
           .get('/api/articles?limit=3')
-          .then(({ body }) => expect(+body.numOfArticles).to.equal(12))));
+          .then(({ body }) => expect(+body.total_count).to.equal(12))));
       it('GET request: must have a comment_count key which has the correct value', () => request.get('/api/articles').then(({ body }) => {
         expect(body.articles[0]).to.contain.keys('comment_count');
         expect(+body.articles[0].comment_count).to.be.a('number');
@@ -120,7 +120,7 @@ describe('/api', () => {
           .send(newArticle)
           .expect(201)
           .then(({ body }) => {
-            expect(body.addedArticle).contain.keys(
+            expect(body.article).contain.keys(
               'article_id',
               'title',
               'body',
@@ -129,7 +129,7 @@ describe('/api', () => {
               'author',
               'created_at',
             );
-            expect(body.addedArticle.article_id).to.equal(13);
+            expect(body.article.article_id).to.equal(13);
           });
       });
       it('GET/QUERY: allows user to query by author', () => request
@@ -238,11 +238,9 @@ describe('/api', () => {
           .send({ inc_votes: 'geeeeee' })
           .expect(400)
           .then(({ body }) => expect(body.ERROR).to.equal('ERROR: INVALID DATA INPUT')));
-        it('POST: returns 400 if posted data is not correct type', () => {
+        it('POST: returns 400 if posted data is missing infornation', () => {
           const newArticle = {
-            title: 123456,
             body: 'blahblah, blah blah bllllllllllllllllllaaaaaaaahhhh',
-            votes: 'dfgh',
             topic: 'mitch',
             author: 'butter_bridge',
           };
@@ -250,13 +248,14 @@ describe('/api', () => {
             .post('/api/articles')
             .send(newArticle)
             .expect(400)
-            .then(({ body }) => expect(body.ERROR).to.equal('BAD REQUEST: INVALID INPUT SYNTAX'));
+            .then(({ body }) => expect(body.ERROR).to.equal(
+              'BAD REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
+            ));
         });
         it('POST: returns 422 if posted data is correct but foreign key relation does not exist', () => {
           const newArticle = {
             title: 'Sheep',
             body: 'blahblah, blah blah bllllllllllllllllllaaaaaaaahhhh',
-            votes: 0,
             topic: 'mitch',
             author: 'Greg',
           };
@@ -275,7 +274,7 @@ describe('/api', () => {
     describe('/articles/:article_id/comments', () => {
       it('GET request: responds with a status 200', () => request.get('/api/articles/1/comments').expect(200));
       it('GET request: returns an array of comments from given article ID and contains correct keys', () => request.get('/api/articles/1/comments').then(({ body }) => {
-        expect(body.articleComments[0]).contain.keys(
+        expect(body.comments[0]).contain.keys(
           'comment_id',
           'votes',
           'created_at',
@@ -288,24 +287,24 @@ describe('/api', () => {
         .expect(200)
         .then(
           ({ body }) => expect(
-            new Date(body.articleComments[0].created_at).getTime()
-                  > new Date(body.articleComments[3].created_at).getTime(),
+            new Date(body.comments[0].created_at).getTime()
+                  > new Date(body.comments[3].created_at).getTime(),
           ).to.be.true,
         ));
       it('GET/QUERY: allows user to set Limit of rows displayed on a page which defaults to 10', () => request
         .get('/api/articles/1/comments')
         .expect(200)
-        .then(({ body }) => expect(body.articleComments).to.have.length(10))
+        .then(({ body }) => expect(body.comments).to.have.length(10))
         .then(() => request.get('/api/articles/1/comments?limit=4'))
-        .then(({ body }) => expect(body.articleComments).to.have.length(4)));
+        .then(({ body }) => expect(body.comments).to.have.length(4)));
       it('GET/QUERY: allows user to query a certain page of article results', () => request
         .get('/api/articles/1/comments?limit=3&p=2')
         .expect(200)
         .then(({ body }) => {
-          expect(body.articleComments[0].comment_id).to.equal(5);
-          expect(body.articleComments[1].comment_id).to.equal(6);
-          expect(body.articleComments[2].comment_id).to.equal(7);
-          expect(body.articleComments).to.have.length(3);
+          expect(body.comments[0].comment_id).to.equal(5);
+          expect(body.comments[1].comment_id).to.equal(6);
+          expect(body.comments[2].comment_id).to.equal(7);
+          expect(body.comments).to.have.length(3);
         }));
       it('POST request: responds with a 201 status and returns the posted comment with correct keys', () => {
         const newComment = {
@@ -317,7 +316,7 @@ describe('/api', () => {
           .send(newComment)
           .expect(201)
           .then(({ body }) => {
-            expect(body.postedComment).contain.keys(
+            expect(body.comment).contain.keys(
               'author',
               'comment_id',
               'votes',
@@ -360,7 +359,7 @@ describe('/api', () => {
           .send(incVotes)
           .expect(200)
           .then(({ body }) => {
-            expect(body.updatedComment).contain.keys(
+            expect(body.comment).contain.keys(
               'comment_id',
               'author',
               'article_id',
@@ -369,15 +368,15 @@ describe('/api', () => {
               'created_at',
               'body',
             );
-            expect(body.updatedComment.votes).to.equal(26);
+            expect(body.comment.votes).to.equal(26);
           });
       });
       it('DELETE request: responds with 204 and removes comment from database', () => request
         .get('/api/articles/1/comments?limit=15')
-        .then(({ body }) => expect(body.articleComments).to.have.length(13))
+        .then(({ body }) => expect(body.comments).to.have.length(13))
         .then(() => request.delete('/api/comments/5').expect(204))
         .then(() => request.get('/api/articles/1/comments?limit=15').expect(200))
-        .then(({ body }) => expect(body.articleComments).to.have.length(12)));
+        .then(({ body }) => expect(body.comments).to.have.length(12)));
       describe('ERROR TESTING', () => {
         it('PATCH: responds with 400 if passed a comment id that does not exist', () => {
           const incVotes = { inc_votes: 12 };
@@ -418,8 +417,8 @@ describe('/api', () => {
           .send(newUser)
           .expect(201)
           .then(({ body }) => {
-            expect(body.addedUser.name).to.equal('Mark');
-            expect(body.addedUser).have.keys('username', 'avatar_url', 'name');
+            expect(body.user.name).to.equal('Mark');
+            expect(body.user).have.keys('username', 'avatar_url', 'name');
           });
       });
       describe('/users/:username', () => {
