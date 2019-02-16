@@ -45,10 +45,10 @@ exports.getArticleById = article_id => connection
 exports.getArticleComments = (
   article_id,
   {
-    sort_by = 'created_at', order = 'desc', limit = 10, p,
+    sort_by = 'created_at', order = 'desc', limit = 10, p = 1,
   },
 ) => connection
-  .select('comment_id', 'votes', 'created_at', 'author', 'body')
+  .select('comment_id', 'author', 'body', 'votes', 'created_at')
   .from('comments')
   .where({ article_id })
   .orderBy(sort_by, order)
@@ -63,7 +63,7 @@ exports.patchArticleVotes = (articleId, inc_votes) => connection
   .select('*')
   .from('articles')
   .where('article_id', articleId)
-  .increment('votes', inc_votes)
+  .increment('votes', inc_votes || 0)
   .returning('*');
 
 exports.deleteArticle = articleId => connection
@@ -72,9 +72,6 @@ exports.deleteArticle = articleId => connection
   .where('article_id', articleId)
   .del();
 
-exports.postComment = (articleId, commentData) => {
-  const { username, body } = commentData;
-  return connection('comments')
-    .insert({ article_id: articleId, author: username, body })
-    .returning('*');
-};
+exports.postComment = (article_id, { username, body }) => connection('comments')
+  .insert({ article_id, author: username, body })
+  .returning('*');

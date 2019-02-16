@@ -8,8 +8,12 @@ const {
   getArticleById,
 } = require('../models/articles');
 
+const articleColumns = ['created_at', 'title', 'votes', 'author', 'article_id', 'topic'];
+
 exports.sendArticles = (req, res, next) => {
-  getArticles(req.query)
+  const { sort_by, ...query } = req.query;
+  if (articleColumns.includes(sort_by)) query.sort_by = sort_by;
+  getArticles(query)
     .then(([articles, [{ total_count }]]) => {
       articles.forEach(article => delete article.body);
       res.status(200).send({ total_count, articles });
@@ -44,15 +48,12 @@ exports.sendArticleById = (req, res, next) => {
 exports.updateArticleVotesById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  if (!Number(inc_votes)) next({ status: 400, msg: 'ERROR: INVALID DATA INPUT' });
-  else {
-    patchArticleVotes(article_id, inc_votes)
-      .then(([updatedArticle]) => {
-        if (!updatedArticle) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
-        res.status(200).send({ updatedArticle });
-      })
-      .catch(next);
-  }
+  patchArticleVotes(article_id, inc_votes)
+    .then(([article]) => {
+      if (!article) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
+      res.status(200).send({ article });
+    })
+    .catch(next);
 };
 
 exports.deleteArticleById = (req, res, next) => {
@@ -72,7 +73,9 @@ exports.deleteArticleById = (req, res, next) => {
 
 exports.sendArticleComments = (req, res, next) => {
   const { article_id } = req.params;
-  getArticleComments(article_id, req.query)
+  const { sort_by, ...query } = req.query;
+  if (articleColumns.includes(sort_by)) query.sort_by = sort_by;
+  getArticleComments(article_id, query)
     .then((comments) => {
       if (comments.length === 0) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
       res.status(200).send({ comments });
@@ -82,8 +85,8 @@ exports.sendArticleComments = (req, res, next) => {
 
 exports.addArticleComment = (req, res, next) => {
   const { article_id } = req.params;
-  const commentData = req.body;
-  postComment(article_id, commentData)
+  const { username, body } = req.body;
+  postComment(article_id, { username, body })
     .then(([comment]) => {
       if (!comment) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
       res.status(201).send({ comment });

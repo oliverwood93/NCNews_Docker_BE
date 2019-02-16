@@ -1,5 +1,5 @@
 exports.formatTime = dataArr => dataArr.map((data) => {
-  data.created_at = new Date(data.created_at).toISOString();
+  data.created_at = new Date(data.created_at);
   return data;
 });
 
@@ -8,13 +8,11 @@ exports.getArticleIdLookup = articles => articles.reduce((acc, curr) => {
   return acc;
 }, {});
 
-exports.formatComments = (comments, articleIdRef) => comments.map((comment) => {
-  const commentObj = {
-    author: comment.created_by,
-    article_id: articleIdRef[comment.belongs_to],
-    votes: comment.votes,
-    created_at: comment.created_at,
-    body: comment.body,
-  };
-  return commentObj;
-});
+exports.formatComments = (comments, articleIdRef) => comments.map(({
+  created_by, created_at, belongs_to, ...commentData
+}) => ({
+  author: created_by,
+  article_id: articleIdRef[belongs_to],
+  ...commentData,
+  created_at: new Date(created_at),
+}));

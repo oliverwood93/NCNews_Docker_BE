@@ -157,6 +157,12 @@ describe('/api', () => {
           ({ body }) => expect(body.articles[0].votes <= body.articles[body.articles.length - 1].votes).to.be
             .true,
         ));
+      it('GET/QUERY: if sort_by criteria is not an existing column then it is ignore and defaults to date', () => request
+        .get('/api/articles?sort_by=bananas')
+        .expect(200)
+        .then(({ body }) => expect(new Date(body.articles[0].created_at).getTime()).to.be.greaterThan(
+          new Date(body.articles[1].created_at).getTime(),
+        )));
       it('GET/QUERY: allows users to limit the rows displayed on a page, defaults to 10', () => request
         .get('/api/articles?limit=7')
         .expect(200)
@@ -200,8 +206,8 @@ describe('/api', () => {
         .send({ inc_votes: 10 })
         .expect(200)
         .then(({ body }) => {
-          expect(body.updatedArticle.votes).to.equal(110);
-          expect(body.updatedArticle).contain.keys(
+          expect(body.article.votes).to.equal(110);
+          expect(body.article).have.keys(
             'article_id',
             'title',
             'body',
@@ -210,6 +216,22 @@ describe('/api', () => {
             'author',
             'created_at',
           );
+        }));
+      it('PATCH: returns 200 if patch input data is incorrect type or does not have body and returns unmodifed article', () => request
+        .patch('/api/articles/3')
+        .send({})
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).have.keys(
+            'article_id',
+            'title',
+            'body',
+            'votes',
+            'topic',
+            'author',
+            'created_at',
+          );
+          expect(body.article.votes).to.equal(0);
         }));
       it('DELETE request: responds with a 204 status code', () => request.delete('/api/articles/2').expect(204));
       it('DELETE request: removes/deletes articles with the given article ID parameter', () => request
@@ -233,11 +255,6 @@ describe('/api', () => {
           .send({ inc_votes: 20 })
           .expect(404)
           .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
-        it('PATCH: returns 400 if patch input data is incorrect type', () => request
-          .patch('/api/articles/3')
-          .send({ inc_votes: 'geeeeee' })
-          .expect(400)
-          .then(({ body }) => expect(body.ERROR).to.equal('ERROR: INVALID DATA INPUT')));
         it('POST: returns 400 if posted data is missing infornation', () => {
           const newArticle = {
             body: 'blahblah, blah blah bllllllllllllllllllaaaaaaaahhhh',
