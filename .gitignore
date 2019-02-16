@@ -1,3 +1,5 @@
 node_modules
 pgconfig.js
 config
+query-builder.sql
+knexfile.js

@@ -1,5 +1,5 @@
 exports.formatTime = dataArr => dataArr.map((data) => {
-  data.created_at = new Date(data.created_at);
+  data.created_at = new Date(data.created_at).toISOString();
   return data;
 });
 
@@ -11,8 +11,9 @@ exports.getArticleIdLookup = articles => articles.reduce((acc, curr) => {
 exports.formatComments = (comments, articleIdRef) => comments.map(({
   created_by, created_at, belongs_to, ...commentData
 }) => ({
+  
   author: created_by,
   article_id: articleIdRef[belongs_to],
   ...commentData,
-  created_at: new Date(created_at),
+  created_at: new Date(created_at).toISOString(),
 }));

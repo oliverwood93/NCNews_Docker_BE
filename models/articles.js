@@ -55,21 +55,25 @@ exports.getArticleComments = (
   .offset(limit * p - limit)
   .limit(limit);
 
-exports.postArticle = articleData => connection('articles')
-  .insert(articleData)
+exports.postArticle = ({
+  title, body, topic, author,
+}) => connection('articles')
+  .insert({
+    title, body, topic, author,
+  })
   .returning('*');
 
-exports.patchArticleVotes = (articleId, inc_votes) => connection
+exports.patchArticleVotes = (article_id, inc_votes) => connection
   .select('*')
   .from('articles')
-  .where('article_id', articleId)
-  .increment('votes', inc_votes || 0)
+  .where({ article_id })
+  .increment('votes', Number(inc_votes) ? inc_votes : 0)
   .returning('*');
 
-exports.deleteArticle = articleId => connection
+exports.deleteArticle = article_id => connection
   .select('*')
   .from('articles')
-  .where('article_id', articleId)
+  .where({ article_id })
   .del();
 
 exports.postComment = (article_id, { username, body }) => connection('comments')

@@ -269,7 +269,7 @@ describe('/api', () => {
               'BAD REQUEST: INVALID INPUT, FAILING NOT-NULL CONSTRAINT',
             ));
         });
-        it('POST: returns 422 if posted data is correct but foreign key relation does not exist', () => {
+        it('POST: returns 404 if posted data is correct but foreign key relation does not exist', () => {
           const newArticle = {
             title: 'Sheep',
             body: 'blahblah, blah blah bllllllllllllllllllaaaaaaaahhhh',
@@ -279,8 +279,8 @@ describe('/api', () => {
           return request
             .post('/api/articles')
             .send(newArticle)
-            .expect(422)
-            .then(({ body }) => expect(body.ERROR).to.equal('UNPROCESSABLE ENTITY: PLEASE REVIEW DATA'));
+            .expect(404)
+            .then(({ body }) => expect(body.ERROR).to.equal('PAGE NOT FOUND'));
         });
         it('POST: returns 405 if an invalid method is selected', () => request
           .post('/api/articles/2')
@@ -351,7 +351,7 @@ describe('/api', () => {
           .get('/api/articles/1111/comments')
           .expect(404)
           .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
-        it('POST: returns 422 when relational foreign key is in the correct form but not present in db', () => {
+        it('POST: returns 404 when relational foreign key is in the correct form but not present in db', () => {
           const newComment = {
             username: 'butter_br',
             body: 'testinnnnggg',
@@ -359,8 +359,8 @@ describe('/api', () => {
           return request
             .post('/api/articles/2/comments')
             .send(newComment)
-            .expect(422)
-            .then(({ body }) => expect(body.ERROR).to.equal('UNPROCESSABLE ENTITY: PLEASE REVIEW DATA'));
+            .expect(404)
+            .then(({ body }) => expect(body.ERROR).to.equal('PAGE NOT FOUND'));
         });
         it('POST/PUT: returns 405 if an invalid method is selected', () => request
           .post('/api/articles/2')
@@ -403,13 +403,23 @@ describe('/api', () => {
             .expect(404)
             .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Comment Does Not Exist'));
         });
-        it('PATCH: responds with 400 if passed a comment that is not in correct format ', () => {
+        it('PATCH: responds with 200 if passed a comment that is not in correct format or has no body and returns umodified comment', () => {
           const incVotes = { inc_votes: 'dfgh' };
           return request
             .patch('/api/comments/3')
             .send(incVotes)
-            .expect(400)
-            .then(({ body }) => expect(body.ERROR).to.equal('ERROR: INVALID DATA INPUT'));
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).have.keys(
+                'comment_id',
+                'author',
+                'votes',
+                'article_id',
+                'body',
+                'created_at',
+              );
+              expect(body.comment.votes).to.equal(100);
+            });
         });
         it('DELETE: responds with 400 if comment does not exist ', () => request
           .delete('/api/comments/9000')
