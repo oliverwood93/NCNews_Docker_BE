@@ -180,7 +180,7 @@ module.exports = require('knex')(config);
 
 ```
 
-8. Add the follwing scripts to the package.json (if there a start script already exists then omit this line):
+8. Add the following scripts to the package.json (if there a start script already exists then omit this line):
 
 ```json
 "scripts": {
