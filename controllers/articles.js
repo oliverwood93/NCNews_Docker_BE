@@ -48,12 +48,15 @@ exports.sendArticleById = (req, res, next) => {
 exports.updateArticleVotesById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  patchArticleVotes(article_id, inc_votes)
-    .then(([article]) => {
-      if (!article) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
-      res.status(200).send({ article });
-    })
-    .catch(next);
+  if (typeof inc_votes !== 'number') next({ status: 400, msg: 'BAD REQUEST: INVALID DATA INPUT' })
+  else {
+    patchArticleVotes(article_id, inc_votes)
+      .then(([article]) => {
+        if (!article) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
+        res.status(200).send({ article });
+      })
+      .catch(next);
+  }
 };
 
 exports.deleteArticleById = (req, res, next) => {

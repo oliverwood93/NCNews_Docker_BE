@@ -59,7 +59,10 @@ exports.postArticle = ({
   title, body, topic, author,
 }) => connection('articles')
   .insert({
-    title, body, topic, author,
+    title,
+    body,
+    topic,
+    author,
   })
   .returning('*');
 
@@ -67,7 +70,7 @@ exports.patchArticleVotes = (article_id, inc_votes) => connection
   .select('*')
   .from('articles')
   .where({ article_id })
-  .increment('votes', Number(inc_votes) ? inc_votes : 0)
+  .increment('votes', [-1, 1].includes(inc_votes) ? inc_votes : 0)
   .returning('*');
 
 exports.deleteArticle = article_id => connection

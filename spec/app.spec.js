@@ -203,10 +203,10 @@ describe('/api', () => {
         }));
       it('PATCH request: responds with 200 allows updating of votes value in articles object, returns the updated article', () => request
         .patch('/api/articles/1')
-        .send({ inc_votes: 10 })
+        .send({ inc_votes: 1 })
         .expect(200)
         .then(({ body }) => {
-          expect(body.article.votes).to.equal(110);
+          expect(body.article.votes).to.equal(101);
           expect(body.article).have.keys(
             'article_id',
             'title',
@@ -217,22 +217,10 @@ describe('/api', () => {
             'created_at',
           );
         }));
-      it('PATCH: returns 200 if patch input data is incorrect type or does not have body and returns unmodifed article', () => request
+      it('PATCH: returns 400 if patch input data is incorrect type or does not have body and returns unmodifed article', () => request
         .patch('/api/articles/3')
         .send({})
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article).have.keys(
-            'article_id',
-            'title',
-            'body',
-            'votes',
-            'topic',
-            'author',
-            'created_at',
-          );
-          expect(body.article.votes).to.equal(0);
-        }));
+        .expect(400));
       it('DELETE request: responds with a 204 status code', () => request.delete('/api/articles/2').expect(204));
       it('DELETE request: removes/deletes articles with the given article ID parameter', () => request
         .delete('/api/articles/1')
@@ -403,23 +391,12 @@ describe('/api', () => {
             .expect(404)
             .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Comment Does Not Exist'));
         });
-        it('PATCH: responds with 200 if passed a comment that is not in correct format or has no body and returns umodified comment', () => {
+        it('PATCH: responds with 400 if passed a comment that is not in correct format or has no body', () => {
           const incVotes = { inc_votes: 'dfgh' };
           return request
             .patch('/api/comments/3')
             .send(incVotes)
-            .expect(200)
-            .then(({ body }) => {
-              expect(body.comment).have.keys(
-                'comment_id',
-                'author',
-                'votes',
-                'article_id',
-                'body',
-                'created_at',
-              );
-              expect(body.comment.votes).to.equal(100);
-            });
+            .expect(400);
         });
         it('DELETE: responds with 400 if comment does not exist ', () => request
           .delete('/api/comments/9000')

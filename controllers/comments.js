@@ -3,8 +3,8 @@ const { patchCommentVotes, deleteComment } = require('../models/comments');
 exports.updateCommentVotesById = (req, res, next) => {
   const { comment_id } = req.params;
   const { inc_votes } = req.body;
-  // if (!Number(inc_votes)) next({ status: 400, msg: 'ERROR: INVALID DATA INPUT' })
-  // else {
+  if (typeof inc_votes !== 'number') next({ status: 400, msg: 'BAD REQUEST: INVALID DATA INPUT' })
+  else {
   patchCommentVotes(comment_id, inc_votes)
     .then(([comment]) => {
       if (!comment) {
@@ -13,7 +13,7 @@ exports.updateCommentVotesById = (req, res, next) => {
       res.status(200).send({ comment });
     })
     .catch(next);
-  // }
+  }
 };
 
 exports.deleteCommentById = (req, res, next) => {
