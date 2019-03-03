@@ -217,10 +217,10 @@ describe('/api', () => {
             'created_at',
           );
         }));
-      it('PATCH: returns 400 if patch input data is incorrect type or does not have body and returns unmodifed article', () => request
+      it('PATCH: returns 200 if patch input data does not have body and returns unmodifed article', () => request
         .patch('/api/articles/3')
         .send({})
-        .expect(400));
+        .expect(200));
       it('DELETE request: responds with a 204 status code', () => request.delete('/api/articles/2').expect(204));
       it('DELETE request: removes/deletes articles with the given article ID parameter', () => request
         .delete('/api/articles/1')
@@ -339,7 +339,7 @@ describe('/api', () => {
           .get('/api/articles/1111/comments')
           .expect(404)
           .then(({ body }) => expect(body.ERROR).to.equal('ERROR: Article Does Not Exist')));
-        it('POST: returns 404 when relational foreign key is in the correct form but not present in db', () => {
+        it('POST: returns 422 when relational foreign key of user does not exist', () => {
           const newComment = {
             username: 'butter_br',
             body: 'testinnnnggg',
@@ -347,8 +347,8 @@ describe('/api', () => {
           return request
             .post('/api/articles/2/comments')
             .send(newComment)
-            .expect(404)
-            .then(({ body }) => expect(body.ERROR).to.equal('PAGE NOT FOUND'));
+            .expect(422)
+            .then(({ body }) => expect(body.ERROR).to.equal('UNPROCESSABLE ENTITY: USER DOES NOT EXIST'));
         });
         it('POST/PUT: returns 405 if an invalid method is selected', () => request
           .post('/api/articles/2')
@@ -358,7 +358,7 @@ describe('/api', () => {
     });
     describe('/comments/:comment_id', () => {
       it('PATCH request: responds with 200 status and the updated comment', () => {
-        const incVotes = { inc_votes: 12 };
+        const incVotes = { inc_votes: 1 };
         return request
           .patch('/api/comments/2')
           .send(incVotes)
@@ -373,7 +373,7 @@ describe('/api', () => {
               'created_at',
               'body',
             );
-            expect(body.comment.votes).to.equal(26);
+            expect(body.comment.votes).to.equal(15);
           });
       });
       it('DELETE request: responds with 204 and removes comment from database', () => request

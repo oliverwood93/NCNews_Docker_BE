@@ -13,6 +13,10 @@ exports.handle404 = (err, req, res, next) => {
   const errorCodes404 = {
     23503: 'PAGE NOT FOUND',
   };
+  const error422Constaints = {
+    comments_author_foreign: true
+  }
+  if (error422Constaints[err.constraint]) next(err)
   if (errorCodes404[err.code]) res.status(404).send({ ERROR: errorCodes404[err.code] });
   else if (err.status === 404) res.status(404).send({ ERROR: err.msg });
   else next(err);
@@ -24,6 +28,7 @@ exports.handle405 = (req, res) => {
 
 exports.handle422 = (err, req, res, next) => {
   const errorCodes422 = {
+    23503: 'UNPROCESSABLE ENTITY: USER DOES NOT EXIST',
     23505: 'UNPROCESSABLE ENTITY: DATA ALREADY IN USE',
   };
 
