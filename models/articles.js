@@ -25,8 +25,8 @@ exports.getArticles = ({
       .count({ comment_count: 'comments.comment_id' })
       .from('articles')
       .where(whereQuery)
-      .orderBy(sort_by, order)
       .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+      .orderBy(sort_by, order)
       .groupBy('articles.article_id')
       .offset(limit * p - limit)
       .limit(limit),

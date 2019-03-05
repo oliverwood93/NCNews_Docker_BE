@@ -8,10 +8,10 @@ const {
   getArticleById,
 } = require('../models/articles');
 
-const articleColumns = ['created_at', 'title', 'votes', 'author', 'article_id', 'topic'];
+const articleColumns = ['created_at', 'title', 'votes', 'author', 'article_id', 'topic', 'comment_count'];
 
 exports.sendArticles = (req, res, next) => {
-  const { sort_by, ...query } = req.query;
+  const {sort_by, ...query}  = req.query;
   if (articleColumns.includes(sort_by)) query.sort_by = sort_by;
   getArticles(query)
     .then(([articles, [{ total_count }]]) => {
