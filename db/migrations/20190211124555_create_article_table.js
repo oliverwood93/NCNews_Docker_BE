@@ -12,7 +12,7 @@ exports.up = function (connection, Promise) {
       .string('author')
       .notNullable()
       .references('users.username');
-    articlesTable.dateTime('created_at').defaultTo(new Date().toISOString());
+    articlesTable.dateTime('created_at').defaultTo(connection.fn.now());
   });
 };
 

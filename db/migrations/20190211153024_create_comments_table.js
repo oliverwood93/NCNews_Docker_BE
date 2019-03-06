@@ -11,7 +11,7 @@ exports.up = function (connection, Promise) {
       .references('articles.article_id')
       .onDelete('CASCADE');
     commentsTable.integer('votes').defaultTo(0);
-    commentsTable.dateTime('created_at').defaultTo(new Date().toISOString());
+    commentsTable.dateTime('created_at').defaultTo(connection.fn.now());
     commentsTable.text('body').notNullable();
   });
 };
