@@ -8,10 +8,18 @@ const {
   getArticleById,
 } = require('../models/articles');
 
-const articleColumns = ['created_at', 'title', 'votes', 'author', 'article_id', 'topic', 'comment_count'];
+const articleColumns = [
+  'created_at',
+  'title',
+  'votes',
+  'author',
+  'article_id',
+  'topic',
+  'comment_count',
+];
 
 exports.sendArticles = (req, res, next) => {
-  const {sort_by, ...query}  = req.query;
+  const { sort_by, ...query } = req.query;
   if (articleColumns.includes(sort_by)) query.sort_by = sort_by;
   getArticles(query)
     .then(([articles, [{ total_count }]]) => {
@@ -78,9 +86,12 @@ exports.sendArticleComments = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by, ...query } = req.query;
   if (articleColumns.includes(sort_by)) query.sort_by = sort_by;
-  getArticleComments(article_id, query)
+  getArticleById(article_id)
+    .then(([article]) => {
+      if (!article) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
+      return getArticleComments(article_id, query);
+    })
     .then((comments) => {
-      if (comments.length === 0) return Promise.reject({ status: 404, msg: 'ERROR: Article Does Not Exist' });
       res.status(200).send({ comments });
     })
     .catch(next);
