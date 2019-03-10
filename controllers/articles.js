@@ -23,7 +23,6 @@ exports.sendArticles = (req, res, next) => {
   if (articleColumns.includes(sort_by)) query.sort_by = sort_by;
   getArticles(query)
     .then(([articles, [{ total_count }]]) => {
-      articles.forEach(article => delete article.body);
       res.status(200).send({ total_count, articles });
     })
     .catch(next);

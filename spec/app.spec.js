@@ -86,6 +86,7 @@ describe('/api', () => {
         expect(body.articles).to.be.an('array');
         expect(body.articles[0]).to.have.keys(
           'author',
+          'body',
           'title',
           'article_id',
           'topic',

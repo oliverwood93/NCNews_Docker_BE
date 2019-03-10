@@ -3,3 +3,4 @@ pgconfig.js
 config
 query-builder.sql
 knexfile.js
+spec/nc.spec.js
