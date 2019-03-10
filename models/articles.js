@@ -30,7 +30,9 @@ exports.getArticles = ({
       .groupBy('articles.article_id')
       .offset(limit * p - limit)
       .limit(limit),
-    connection('articles').count('article_id as total_count'),
+    connection('articles')
+      .count('article_id as total_count')
+      .where(author ? { 'articles.author': author } : {}),
   ]);
 };
 
