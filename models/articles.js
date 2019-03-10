@@ -32,7 +32,7 @@ exports.getArticles = ({
       .limit(limit),
     connection('articles')
       .count('article_id as total_count')
-      .where(author ? { 'articles.author': author } : {}),
+      .where(whereQuery),
   ]);
 };
 
